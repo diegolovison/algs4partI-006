@@ -11,7 +11,7 @@ public class Percolation {
         this.grid = new boolean[N*N+2];
 
         // N+2 = virtual-top / virtual-bottom trick
-        quickUnionUF = new WeightedQuickUnionUF(2*N*N+2);
+        quickUnionUF = new WeightedQuickUnionUF(N*N+2);
     }                
 
     // open site (row i, column j) if it is not already
@@ -25,7 +25,7 @@ public class Percolation {
 
             int xyTop = i == 1 ? 0 : this.xyTo1D(i-1, j);
             int xyRight = j == N ? -1 : this.xyTo1D(i, j+1);
-            int xyBottom = i == N ? N : this.xyTo1D(i+1, j);
+            int xyBottom = i == N ? N*N+1 : this.xyTo1D(i+1, j);
             int xyLeft = j == 1 ? -1 : this.xyTo1D(i, j-1);
 
             if (xyTop == 0 || grid[xyTop]) {
@@ -36,12 +36,8 @@ public class Percolation {
                 quickUnionUF.union(xy, xyRight);
             }
 
-            if (xyBottom == N || grid[xyBottom]) {
+            if (xyBottom == N*N+1 || grid[xyBottom]) {
                 quickUnionUF.union(xy, xyBottom);
-            }
-
-            if (i == N) {
-                quickUnionUF.union(xy, xyBottom+N);
             }
 
             if (xyLeft >= 0 && grid[xyLeft]) {
