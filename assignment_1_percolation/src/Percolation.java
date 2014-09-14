@@ -57,6 +57,7 @@ public class Percolation {
             if (i == N || grid[xyBottom]) {
                 quickUnionUF.union(xyBottom, xy);
 
+                // inverse
                 int inverseXyBottom = this.xyTo1D(inverseI-1, j);
                 quickUnionUF.union(inverseXy, inverseXyBottom);
             }
