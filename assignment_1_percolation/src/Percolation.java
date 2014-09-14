@@ -10,8 +10,12 @@ public class Percolation {
         this.N = N;
         this.grid = new boolean[N*N+2];
 
+        // open the virtual nodes
+        this.grid[0] = true;
+        this.grid[N*N+1] = true;
+
         // N+2 = virtual-top / virtual-bottom trick
-        quickUnionUF = new WeightedQuickUnionUF(N*N+2);
+        quickUnionUF = new WeightedQuickUnionUF(2*N*N+2);
     }                
 
     // open site (row i, column j) if it is not already
@@ -19,29 +23,52 @@ public class Percolation {
 
         if (!isOpen(i, j)) {
 
+            int inverseI = 2*N-(i-1);
+
             int xy = this.xyTo1D(i, j);
+            int inverseXy = this.xyTo1D(inverseI, j);
             
             this.grid[xy] = true;
 
+            // first matrix
             int xyTop = i == 1 ? 0 : this.xyTo1D(i-1, j);
             int xyRight = j == N ? -1 : this.xyTo1D(i, j+1);
-            int xyBottom = i == N ? N*N+1 : this.xyTo1D(i+1, j);
+            int xyBottom = this.xyTo1D(i+1, j);
             int xyLeft = j == 1 ? -1 : this.xyTo1D(i, j-1);
 
-            if (xyTop == 0 || grid[xyTop]) {
+            if (grid[xyTop]) {
                 quickUnionUF.union(xy, xyTop);
+
+                // inverse
+                int inverseXyTop = inverseI == 2*N ? 2*N*N+1 : this.xyTo1D(inverseI+1, j);
+                quickUnionUF.union(inverseXy, inverseXyTop);
             }
 
             if (xyRight >= 0 && grid[xyRight]) {
                 quickUnionUF.union(xy, xyRight);
+
+                // inverse
+                int inverseXyRight = j == N ? -1 : this.xyTo1D(inverseI, j+1);
+                if (inverseXyRight >= 0) {
+                    quickUnionUF.union(inverseXy, inverseXyRight);
+                }
             }
 
-            if (xyBottom == N*N+1 || grid[xyBottom]) {
-                quickUnionUF.union(xy, xyBottom);
+            if (i == N || grid[xyBottom]) {
+                quickUnionUF.union(xyBottom, xy);
+
+                int inverseXyBottom = this.xyTo1D(inverseI-1, j);
+                quickUnionUF.union(inverseXy, inverseXyBottom);
             }
 
             if (xyLeft >= 0 && grid[xyLeft]) {
                 quickUnionUF.union(xy, xyLeft);
+
+                // inverse
+                int inverseXyLeft = j == 1 ? -1 : this.xyTo1D(inverseI, j-1);
+                if (inverseXyLeft >= 0) {
+                    quickUnionUF.union(inverseXy, inverseXyLeft);
+                }
             }
         }
         
@@ -63,7 +90,7 @@ public class Percolation {
 
     // does the system percolate?
     public boolean percolates() {
-        return quickUnionUF.connected(0, N*N+1);
+        return quickUnionUF.connected(0, 2*N*N+1);
     }
 
     // mapping 2D coordinates to 1D coordinates
