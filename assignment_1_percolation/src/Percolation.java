@@ -7,6 +7,10 @@ public class Percolation {
     // create N-by-N grid, with all sites blocked
     public Percolation(int N) {
 
+        if (N <= 0) {
+            throw new IllegalArgumentException();
+        }
+
         this.N = N;
         this.grid = new boolean[N*N+2];
 
@@ -20,6 +24,8 @@ public class Percolation {
 
     // open site (row i, column j) if it is not already
     public void open(int i, int j) {
+
+        check(i, j);
 
         if (!isOpen(i, j)) {
 
@@ -36,6 +42,7 @@ public class Percolation {
             int xyBottom = this.xyTo1D(i+1, j);
             int xyLeft = j == 1 ? -1 : this.xyTo1D(i, j-1);
 
+            // top
             if (grid[xyTop]) {
                 quickUnionUF.union(xy, xyTop);
 
@@ -44,6 +51,7 @@ public class Percolation {
                 quickUnionUF.union(inverseXy, inverseXyTop);
             }
 
+            // right
             if (xyRight >= 0 && grid[xyRight]) {
                 quickUnionUF.union(xy, xyRight);
 
@@ -54,6 +62,7 @@ public class Percolation {
                 }
             }
 
+            // bottom
             if (i == N || grid[xyBottom]) {
                 quickUnionUF.union(xyBottom, xy);
 
@@ -62,6 +71,7 @@ public class Percolation {
                 quickUnionUF.union(inverseXy, inverseXyBottom);
             }
 
+            // left
             if (xyLeft >= 0 && grid[xyLeft]) {
                 quickUnionUF.union(xy, xyLeft);
 
@@ -78,6 +88,8 @@ public class Percolation {
     // is site (row i, column j) open?        
     public boolean isOpen(int i, int j) {
 
+        check(i, j);
+
         int xy = this.xyTo1D(i, j);
 
         return this.grid[xy];
@@ -86,12 +98,20 @@ public class Percolation {
     // is site (row i, column j) full?
     public boolean isFull(int i, int j) {
 
+        check(i, j);
+
         return quickUnionUF.connected(xyTo1D(i, j), 0);
     }      
 
     // does the system percolate?
     public boolean percolates() {
         return quickUnionUF.connected(0, 2*N*N+1);
+    }
+
+    private void check(int i, int j) {
+
+        if (i < 1 || i > N) throw new IndexOutOfBoundsException();
+        if (j < 1 || j > N) throw new IndexOutOfBoundsException();
     }
 
     // mapping 2D coordinates to 1D coordinates
