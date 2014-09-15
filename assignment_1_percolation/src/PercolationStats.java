@@ -14,12 +14,12 @@ public class PercolationStats {
         experimentsCount = T;
         fractions = new double[experimentsCount];
 
-        for (int expNum=0; expNum<experimentsCount; expNum++) {
+        for (int expNum = 0; expNum < experimentsCount; expNum++) {
 
             pr = new Percolation(N);
             int openedSites = 0;
 
-            while(!pr.percolates()) {
+            while (!pr.percolates()) {
 
                 int i = StdRandom.uniform(1, N + 1);
                 int j = StdRandom.uniform(1, N + 1);

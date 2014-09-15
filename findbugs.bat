@@ -1,0 +1,1 @@
+java -jar "C:\findbugs-3.0.0\lib\findbugs.jar" -textui -longBugCodes -exclude "findbugs.xml" -auxclasspath "lib\algs4.jar;lib\stdlib.jar" %1
