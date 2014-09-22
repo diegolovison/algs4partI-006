@@ -1,8 +1,8 @@
 public class PercolationStats {
 
     private int experimentsCount;
-    private Percolation pr;
-    private double[] fractions;
+    private double mean;
+    private double stddev;
 
     // perform T independent computational experiments on an N-by-N grid
     public PercolationStats(int N, int T) {
@@ -12,7 +12,9 @@ public class PercolationStats {
         }
 
         experimentsCount = T;
-        fractions = new double[experimentsCount];
+        double[] fractions = new double[experimentsCount];
+
+        Percolation pr;
 
         for (int expNum = 0; expNum < experimentsCount; expNum++) {
 
@@ -33,16 +35,19 @@ public class PercolationStats {
             double fraction = (double) openedSites / (N * N);
             fractions[expNum] = fraction;
         }
+
+        mean = StdStats.mean(fractions);
+        stddev = StdStats.stddev(fractions);
     }
 
     // sample mean of percolation threshold
     public double mean() {
-        return StdStats.mean(fractions);
+        return mean;
     }
 
     // sample standard deviation of percolation threshold
     public double stddev() {
-        return StdStats.stddev(fractions);
+        return stddev;
     }
 
     // returns lower bound of the 95% confidence interval
